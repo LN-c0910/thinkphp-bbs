@@ -1,0 +1,23 @@
+    <?php
+    Route::group('/api',function (){
+        Route::get('/','index/index')->name('api/index/index');
+        Route::post('/login','login/userLogin')->name('api/login/userLogin');
+        Route::post('/getUser','index/getUserInfo')->name('api/index/getUserInfo');
+        Route::post('/register','register/userRegister')->name('api/register/userRegister');
+        Route::resource('topic','topic');
+        Route::get('/index','index/index')->name('api/index/index');
+        Route::get('/topic/section/<section_id>/<page>','topic/getTopicBySection')->name('api/topic/getTopicBySection');
+        Route::post('/section/addclick','section/addclick')->name('api/section/addclick');
+        Route::post('/getMsgAndReplyNum/<uid>','index/getMsgAndReplyNum')->name('api/index/getMsgAndReplyNum');
+        Route::post('/topic/ilike/<status>','topic/updatelike')->name('api/topic/updatelike');
+        Route::post('myTopic','topic/getTopicsByUid')->name('api/topic/getTopicsByUid');
+        Route::resource('reply','reply');
+        Route::get('/reply/<tid>/<page>','reply/index')->name('api/reply/index');
+        Route::post('reply/like/<status>','reply/updateLikeByRid')->name('api/updateLikeByRid');
+        Route::post('admin/topic/<status>/<tid>','admin/updateStatusByTid')->name('api/admin/updateStatusByTid');
+        Route::post('user/updatepwd','user/updatepwd')->name('api/user/updatepwd');
+        Route::get('topic/search','topic/searchTopicByKeyWord')->name('api/topic/searchTopicByKeyWord');
+        Route::resource('collection','collection');
+        Route::post('collection/list','collection/index')->name('api/collection/index');
+        Route::post('report','report/save')->name('api/report/save');
+    })->prefix('api/');

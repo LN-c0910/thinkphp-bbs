@@ -1,0 +1,187 @@
+{extend name="index/main" /}
+{block name="main_content"}
+<link rel="stylesheet" href="/static/css/layui.css">
+<style>
+    .layui-table td{
+        font-size: 80% !important;
+    }
+</style>
+<div class="x-body">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>主帖审核
+        </legend>
+    </fieldset>
+    <span class="x-right" style="line-height:40px">共有数据：{$count} 条</span></xblock>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <input type="checkbox" id="allCheck" name="" value="">
+            </th>
+            <th>
+                ID
+            </th>
+            <th width="90">
+                标题
+            </th>
+            <th width="100">
+                板块
+            </th>
+            <th>
+                内容
+            </th>
+            <th width="100">
+                创建时间
+            </th>
+            <th width="40">
+                操作
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $checkTopic as $key=>$val }
+        <tr>
+            <td>
+                <input class="this_topic" type="checkbox" value="1" name="">
+            </td>
+            <td>
+                {$val.tid}
+            </td>
+            <td>
+                <u style="cursor:pointer" onclick="topic_show({$val.tid})">
+                    {$val.ttopic}
+                </u>
+            </td>
+            <td>
+                <div class="layui-form layui-form-pane">
+                    <select data-tid="{$val.tid}" class="topic_section" lay-filter="topic_section" name="section">
+                        {foreach $sections as $key=>$vo}
+                        <option value="{$vo.sid}" {if($val.tsid==$vo.sid)}selected{else /}{/if}>{$vo.sname}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </td>
+            <td>
+                {$val.tcontents}
+            </td>
+            <td>{$val.ttime}</td>
+            <td class="td-manage" >
+<!--                <a title="编辑" href="javascript:" onclick="question_edit('编辑','question-edit.html','4','','510')"-->
+<!--                   class="layui-btn layui-btn-normal layui-btn-xs ml-5" style="text-decoration:none">-->
+<!--                    修改板块-->
+<!--                </a>-->
+                <a title="通过" class="layui-btn layui-btn-danger layui-btn-xs ml-5" href="javascript:"
+                   onclick="topic_approve(this,{$val.tid})"
+                   style="text-decoration:none">
+                    通过审核
+                </a>
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+
+    <div id="page1"></div>
+</div>
+
+<script>
+    layui.use(['laypage','laydate','form'],function () {
+        var laypage = layui.laypage;
+        var form = layui.form();
+        //以上模块根据需要引入
+
+        laypage({
+            cont: 'page1'
+            ,pages:{$pages}
+            ,curr: getQueryVariable('page')
+            ,jump: function(obj, first){
+                var curr = obj.curr;
+                if (!first) {
+                    location.href = updateQueryParameter(location.href,'page',curr);
+                }
+            }
+        });
+        //修改帖子板块
+        form.on('select(topic_section)', function(data){
+            let tid = data.elem.getAttribute('data-tid');
+            let tsid = data.value;
+            console.log(tid);
+            if (!tid || !tsid){
+                layer.msg("请求错误,请重试");
+                return false;
+            }
+            updateSectionByTopic(tid,tsid);
+        });
+
+
+    });
+
+
+    //获取url查询参数
+    function getQueryVariable(variable)
+    {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+        }
+        return(false);
+    }
+    //修改url查询参数值
+    function updateQueryParameter(url,key,val){
+        let re = new RegExp("([?&])"+key+"=.*?(&|$)","i");
+        let separator = url.indexOf('?') !== -1 ? "&" : "?";
+        if (url.match(re)) {
+            return url.replace(re,'$1' + key + "=" + val + '$2');
+        }else {
+            return url + separator + key + "=" + val;
+        }
+    }
+    //修改帖子板块
+    function updateSectionByTopic(tid, tsid) {
+        $.ajax({
+            url:'/admin/main/update_topic_section/'+tid+'/'+tsid,
+            success:function (res) {
+                if (res.msg==='更新成功'){
+                    layer.msg("修改成功");
+                    return true;
+                }else {
+                    layer.msg("操作失败,请刷新后重试");
+                    return false;
+                }
+            },
+            error:function () {
+                layer.msg("操作失败,请刷新后重试");
+                return false;
+            }
+        })
+    }
+
+
+    function topic_show(tid) {
+        x_admin_show('查看内容', 'topic_add?tid='+tid, '600','600');
+    }
+
+
+    /*审核*/
+    function topic_approve(obj, id) {
+        layer.confirm('确认通过审核吗？', function (index) {
+            //发异步删除数据
+            $.ajax({
+                url:'/admin/main/topic/approve/'+id,
+                type: 'get',
+                success:function (res) {
+                    layer.msg('审核成功', {icon: 1, time: 1000});
+                    $(obj).parents("tr").remove();
+                },
+                error:function (e) {
+                    layer.msg('操作失败,请刷新后重试', {icon: 2, time: 1000});
+                }
+            })
+
+
+        });
+    }
+</script>
+{/block}

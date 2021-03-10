@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="utf-8">
+        <title>
+        </title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="format-detection" content="telephone=no">
+        <link rel="stylesheet" href="/static/css/x-admin.css" media="all">
+    </head>
+    
+    <body>
+        <div class="x-body">
+            <form class="layui-form" action="/admin/section" enctype="multipart/form-data" method="post">
+                <div class="layui-form-item">
+                    <label for="sname" class="layui-form-label">
+                        <span class="x-red">*</span>板块名称
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="sname" name="sname" required="" lay-verify="sname"
+                        autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        少于10个字符
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="sstatement" class="layui-form-label">
+                       板块说明
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="sstatement" name="sstatement" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="simg" class="layui-form-label">
+                        <span class="x-red">*</span>板块头像
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="file" id="simg" name="simg" required="" lay-verify="required"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        图片大小少于2MB
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <button id="add_section" type="submit"  class="layui-btn">
+                        增加
+                    </button>
+                </div>
+            </form>
+        </div>
+        <script>
+            layui.use(['form','layer'], function(){
+              var form = layui.form()
+              ,layer = layui.layer;
+            
+              //自定义验证规则
+              form.verify({
+                sname: function(value){
+                  if(value.length > 10){
+                    return '板块名称不超过10个字符';
+                  }
+                }
+              });
+            });
+
+            // $('#add_section').click(function () {
+            //     $.ajax({
+            //         type:'post',
+            //         url:'/admin/section',
+            //
+            //     })
+            // })
+        </script>
+    </body>
+
+</html>

@@ -1,0 +1,225 @@
+{extend name="index/main" /}
+{block name="main_content"}
+<link rel="stylesheet" href="/static/css/x-admin.css" media="all">
+<div class="x-body">
+    <form class="layui-form x-center" action="" method="post">
+        <div class="layui-inline">
+            <label class="layui-form-label">用户名：</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" placeholder="请输入用户名" autocomplete="off" name="title">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-normal layui-btn-small" layui-submit>
+                <i class="layui-icon">&#xe615;</i> 查询
+            </button>
+            <button class="layui-btn layui-btn-normal layui-btn-small" type="reset">
+                <i class="layui-icon">&#x1002;</i>重置条件
+            </button>
+        </div>
+    </form>
+    <br>
+    <xblock>
+        <button class="layui-btn" onclick="member_add('添加用户','user/add','600','500')"><i class="layui-icon">&#xe608;</i>添加
+        </button>
+        <span class="x-right" style="line-height:40px"></span></xblock>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <input type="checkbox" name="" value="">
+            </th>
+            <th>
+                用户编号
+            </th>
+            <th>
+                登录名
+            </th>
+            <th>
+                头像
+            </th>
+            <th>
+                注册时间
+            </th>
+            <th>
+                最后登录时间
+            </th>
+            <th>
+                积分
+            </th>
+            <th>
+                角色
+            </th>
+            <th>
+                状态
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $userlist as $key=>$val}
+        <tr>
+            <td style="width: 10px">
+                <input type="checkbox" value="1" name="">
+            </td>
+            <td style="width: 30px">
+                {$val.uid}
+            </td>
+            <td style="width: 80px;word-break: break-word">
+                {$val.uname}
+            </td>
+            <td>
+                <img src="/static/uface/{$val.uface}" width="100" alt="">
+            </td>
+            <td style="width: 80px;word-break: break-word">
+                {$val.uregdate}
+            </td>
+            <td style="width: 90px;word-break: break-word">
+                {$val.ulastlogin}
+            </td>
+            <td style="width: 30px;">
+                {$val.upoint}
+            </td>
+            <td style="width: 60px;">
+                {$val.rolename}
+            </td>
+            <td>
+                {if($val.ustate)==1}
+                <span class="layui-badge">锁定</span>
+                {else /}
+                <span class="layui-badge layui-bg-green">正常</span>
+                {/if}
+            </td>
+            <td>
+                <a href="#" onclick="member_show('更多信息','user/view/{$val.uid}','0','660','400')" class="layui-btn layui-btn-normal layui-btn-xs">更多</a>
+                {if($val.ustate)==1}
+                <a href="#" onclick="member_start(this,{$val.uid})" class="layui-btn layui-btn-info layui-btn-xs">解锁</a>
+                {else /}
+                <a href="#" onclick="member_stop(this,{$val.uid})" class="layui-btn layui-btn-danger layui-btn-xs">锁定</a>
+                {/if}
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+        <div id="page"></div>
+</div>
+<script src="/static/lib/layui/layui.js" charset="utf-8"></script>
+<script src="/static/js/x-layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['laydate', 'element', 'laypage', 'layer'], function () {
+        laypage = layui.laypage;//分页
+        layer = layui.layer;//弹出层
+        laypage({
+            cont: 'page'
+            ,pages: {$pages}
+            ,curr: getQueryVariable('page')
+            ,jump: function(obj, first){
+                var curr = obj.curr;
+                if (!first) {
+                    location.href = updateQueryParameter(location.href,'page',curr);
+                }
+            }
+        });
+
+    });
+
+    //获取url查询参数
+    function getQueryVariable(variable)
+    {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+        }
+        return(false);
+    }
+    //修改url查询参数值
+    function updateQueryParameter(url,key,val){
+        let re = new RegExp("([?&])"+key+"=.*?(&|$)","i");
+        let separator = url.indexOf('?') !== -1 ? "&" : "?";
+        if (url.match(re)) {
+            return url.replace(re,'$1' + key + "=" + val + '$2');
+        }else {
+            return url + separator + key + "=" + val;
+        }
+    }
+    /*用户-添加*/
+    function member_add(title, url, w, h) {
+        x_admin_show(title, url, w, h);
+    }
+
+    /*用户-查看*/
+    function member_show(title, url, id, w, h) {
+        x_admin_show(title, url, w, h);
+    }
+
+    /*用户-停用*/
+    function member_stop(obj, id) {
+        layer.confirm('确认要停用吗？', function (index) {
+            //发异步把用户状态进行更改
+            $.ajax({
+                url:'user/stop/'+id,
+                type:'post',
+                success:function (res) {
+                    $(obj).parent("td").append(`
+                    <a href="#"
+                    onclick="member_start(this,${id})"
+                    class="layui-btn layui-btn-info layui-btn-xs">解锁</a>`)
+                        .prev('td').html(`<span class="layui-badge">锁定</span>`);
+                    $(obj).remove();
+                    layer.msg('已停用!', {icon: 5, time: 1000});
+                },
+                error:function (e) {
+                    layer.msg('操作失败,请刷新后重试!', {icon: 5, time: 1000});
+                }
+            })
+
+        });
+    }
+
+    /*用户-启用*/
+    function member_start(obj, id) {
+        layer.confirm('确认要启用吗？', function (index) {
+            $.ajax({
+                url:'user/start/'+id,
+                type:'post',
+                success:function (res) {
+                    $(obj).parent("td").append(`
+                    <a href="#"
+                    onclick="member_stop(this,${id})"
+                    class="layui-btn layui-btn-danger layui-btn-xs">锁定</a>`)
+                        .prev('td').html(`<span class="layui-badge layui-bg-green">正常</span>`);
+                    $(obj).remove();
+                    layer.msg('已启用!', {icon: 6, time: 1000});
+                },
+                error:function (e) {
+                    layer.msg('操作失败,请刷新后重试!', {icon: 5, time: 1000});
+                }
+            })
+        });
+    }
+
+    // 用户-编辑
+    function member_edit(title, url, id, w, h) {
+        x_admin_show(title, url, w, h);
+    }
+
+    /*密码-修改*/
+    function member_password(title, url, id, w, h) {
+        x_admin_show(title, url, w, h);
+    }
+
+    /*用户-删除*/
+    function member_del(obj, id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            //发异步删除数据
+            $(obj).parents("tr").remove();
+            layer.msg('已删除!', {icon: 1, time: 1000});
+        });
+    }
+</script>
+{/block}

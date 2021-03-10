@@ -1,0 +1,313 @@
+{extend name="index/main" /}
+{block name="main_content"}
+<link rel="stylesheet" href="/static/css/layui.css">
+<style>
+    .layui-table td{
+        font-size: 80% !important;
+    }
+    table{
+        min-width: 100%;
+    }
+    td{
+        max-width: 50px;
+    }
+</style>
+<div class="x-body">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>评论管理
+        </legend>
+    </fieldset>
+    <form class="layui-form x-center" action="" style="width:800px">
+        <div class="layui-form-pane" style="margin-top: 15px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">日期范围</label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" placeholder="开始日" id="LAY_demorange_s">
+                </div>
+                <div class="layui-input-inline">
+                    <input class="layui-input" placeholder="截止日" id="LAY_demorange_e">
+                </div>
+                <div class="layui-input-inline">
+                    <input type="number" name="tid" placeholder="主帖ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width:80px">
+                    <button class="layui-btn" lay-submit="" lay-filter="search">搜索</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()">批量删除</button>
+        <div class="layui-form layui-form-pane layui-inline">
+            <select  class="reply_status" lay-filter="reply_status" name="status">
+                <option {if($status==0)}selected{else /}{/if} value="0">全部状态</option>
+                <option {if($status==1)}selected{else /}{/if} value="1">已删除</option>
+                <option {if($status==2)}selected{else /}{/if} value="2">已发布</option>
+            </select>
+        </div>
+        <span class="x-right" style="line-height:40px">共有数据: {$count} 条</span></xblock>
+    <div class="table-container">
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <input type="checkbox" id="allCheck" name="" value="">
+            </th>
+            <th>
+                所属主帖ID
+            </th>
+            <th>
+                所属主帖
+            </th>
+            <th>
+                回复内容
+            </th>
+            <th>
+                父回复内容
+            </th>
+            <th>
+                回复者
+            </th>
+            <th>
+                被回复者
+            </th>
+            <th>
+                回复时间
+            </th>
+            <th>
+                状态
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $allReply as $key=>$val }
+        <tr>
+            <td>
+                <input class="this_topic" type="checkbox" value="1" name="">
+            </td>
+            <td style="width: 30px">
+                <a style="cursor:pointer;text-decoration: underline" href="reply_manager?tid={$val.tid}">{$val.tid}</a>
+
+            </td>
+            <td style="word-wrap:break-word;">
+                <u style="cursor:pointer" onclick="topic_show({$val.tid})">
+                    {$val.ttopic}
+                </u>
+            </td>
+            <td style="word-wrap:break-word;min-width: 120px;">
+                <u style="cursor:pointer" onclick="reply_show({$val.rid})">
+                    {$val.rcontents}
+                </u>
+            </td>
+            <td style="word-wrap:break-word;min-width: 120px;">
+                <u style="cursor:pointer" onclick="reply_show({$val.rrid})">
+                {$val.fatherContent}
+                </u>
+            </td>
+            <td style="min-width: 65px">{$val.uname}</td>
+            <td style="min-width: 65px">{$val.targetName}</td>
+            <td>{$val.rtime}</td>
+            {if($val.status=='已发布')}
+            <td>
+                <span class="layui-badge layui-bg-green">{$val.status}</span>
+            </td>
+            <td class="td-manage" >
+                <a title="删除" class="layui-btn layui-btn-danger layui-btn-xs ml-5" href="javascript:"
+                   onclick="reply_del(this,{$val.rid})"
+                   style="text-decoration:none">
+                    删除
+                </a>
+            </td>
+                {else /}
+            <td>
+                <span class="layui-badge">{$val.status}</span>
+            </td>
+            <td class="td-manage" >
+                <a title="恢复" class="layui-btn layui-btn-info layui-btn-xs ml-5" href="javascript:"
+                   onclick="reply_restore(this,{$val.rid})"
+                   style="text-decoration:none">
+                    恢复
+                </a>
+            </td>
+            {/if}
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    </div>
+    <div id="page"></div>
+</div>
+<script>
+    $(function () {
+        //全选按钮
+        $('#allCheck').click(function () {
+            $('.this_topic').prop('checked',$(this).prop('checked'));
+        });
+        $('.this_topic').click(function () {
+            if ($('.this_topic:checked').length === $('.this_topic').length) {
+                $('#allCheck').prop('checked',true);
+            }else {
+                $('#allCheck').prop('checked',false);
+            }
+        })
+    })
+</script>
+<script>
+    layui.use(['laypage','laydate','form'],function () {
+        var laypage = layui.laypage;
+        var form = layui.form();
+        //以上模块根据需要引入
+        laypage({
+            cont: 'page'
+            ,pages: {$pages}
+            ,curr: getQueryVariable('page')
+            ,jump: function(obj, first){
+                var curr = obj.curr;
+                if (!first) {
+                    location.href = updateQueryParameter(location.href,'page',curr);
+                }
+            }
+        });
+
+        var start = {
+            min: laydate.now()
+            , max: '2099-06-16 23:59:59'
+            , istoday: false
+            , choose: function (datas) {
+                end.min = datas; //开始日选好后，重置结束日的最小日期
+                end.start = datas //将结束日的初始值设定为开始日
+            }
+        };
+
+        var end = {
+            min: laydate.now()
+            , max: '2099-06-16 23:59:59'
+            , istoday: false
+            , choose: function (datas) {
+                start.max = datas; //结束日选好后，重置开始日的最大日期
+            }
+        };
+
+        document.getElementById('LAY_demorange_s').onclick = function () {
+            start.elem = this;
+            laydate(start);
+        };
+        document.getElementById('LAY_demorange_e').onclick = function () {
+            end.elem = this;
+            laydate(end);
+        }
+
+
+        //查询回复帖状态
+        form.on('select(reply_status)', function(data){
+            let status = data.value;
+            if (!status){
+                layer.msg("请求错误,请重试");
+                return false;
+            }
+            location.href = updateQueryParameter(location.href,'status',status);
+        });
+
+        // 搜索提交
+        form.on('submit(search)', function(data){
+            console.log(data.field);//当前容器的全部表单字段，名值对形式：{name: value}
+
+            // return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    });
+
+    //获取url查询参数
+    function getQueryVariable(variable)
+    {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+        }
+        return false;
+    }
+
+    //修改url查询参数值
+    function updateQueryParameter(url,key,val){
+        let re = new RegExp("([?&])"+key+"=.*?(&|$)","i");
+        let separator = url.indexOf('?') !== -1 ? "&" : "?";
+        if (url.match(re)) {
+            return url.replace(re,'$1' + key + "=" + val + '$2');
+        }else {
+            return url + separator + key + "=" + val;
+        }
+    }
+
+
+    //批量删除提交
+    //TODO
+    function delAll() {
+        layer.confirm('确认要删除吗？', function (index) {
+            //捉到所有被选中的，发异步进行删除
+            layer.msg('删除成功', {icon: 1});
+        });
+    }
+
+    function topic_show(tid) {
+        window.open("{$api}#/index/topic/"+tid);
+        layer.msg('可以跳到前台具体主帖页面', {icon: 1, time: 1000});
+    }
+
+    function reply_show(rid) {
+        x_admin_show('查看内容', 'reply/view/'+rid, '600','600');
+    }
+
+
+    /*删除*/
+    function reply_del(obj, id) {
+        layer.confirm('确认要删除吗?删除后可恢复', function (index) {
+            //发异步删除数据
+            $.ajax({
+                url:'reply/delete/'+id,
+                type: 'DELETE',
+                success:function (res) {
+                    layer.msg(res.msg, {icon: 1, time: 1000});
+                    $(obj).parent('td').html(`
+                <a title="恢复" class="layui-btn layui-btn-info layui-btn-xs ml-5" href="javascript:" onclick="reply_restore(this,${id})" style="text-decoration:none">
+                    恢复
+                </a>
+            `).prev('td').html(`<span class="layui-badge">已删除</span>`);
+                },
+                error:function (e) {
+                    layer.msg('删除失败,请刷新后重试', {icon: 2, time: 1000});
+                }
+            })
+
+
+        });
+    }
+    /*恢复*/
+    function reply_restore(obj, id) {
+        layer.confirm('确认要恢复该回复帖吗?', function (index) {
+            //发异步删除数据
+            $.ajax({
+                url:'reply/restore/'+id,
+                type: 'PUT',
+                success:function (res) {
+                    layer.msg(res.msg, {icon: 1, time: 1000});
+                    $(obj).parent('td').html(`
+                <a title="删除" class="layui-btn layui-btn-danger layui-btn-xs ml-5" href="javascript:" onclick="reply_del(this,${id})" style="text-decoration:none">
+                    删除
+                </a>
+            `).prev('td').html(`<span class="layui-badge layui-bg-green">已发布</span>`);
+                },
+                error:function (e) {
+                    layer.msg('操作失败,请刷新后重试', {icon: 2, time: 1000});
+                }
+            })
+
+
+        });
+    }
+</script>
+{/block}

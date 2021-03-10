@@ -1,0 +1,70 @@
+<style>
+    .user_count,.topic_count{
+        background: #4b5357;
+        color:white;
+        height: 200px;
+    }
+    .user_count div,.topic_count div{
+        background: #4b5357;
+        color:white;
+    }
+    .user_num,.topic_num{
+        text-align: center;
+        vertical-align: bottom;
+        height: 100px;
+        line-height: 100px;
+        font-size: 500%;
+    }
+    .topic_count,.topic_count div{
+        background: #1786aa;
+    }
+</style>
+<div style="padding: 15px">
+    <div style="background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6 user_count">
+                <div class="layui-card">
+                    <div class="layui-card-header">注册用户数量</div>
+                    <div class="layui-card-body user_num">
+                        {$user_num}
+                        <span style="font-size: 20px">人</span>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6 topic_count">
+                <div class="layui-card">
+                    <div class="layui-card-header">主帖数量</div>
+                    <div class="layui-card-body topic_num">
+                        {$topic_num}
+                        <span style="font-size: 20px">个</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <br><br>
+    <div style="background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6 user_count">
+                <div class="layui-card">
+                    <div class="layui-card-header">板块数量</div>
+                    <div class="layui-card-body user_num">
+                        {$section_num}
+                        <span style="font-size: 20px">个</span>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6 topic_count">
+                <div class="layui-card">
+                    <div class="layui-card-header">评论数量</div>
+                    <div class="layui-card-body topic_num">
+                        {$reply_num}
+                        <span style="font-size: 20px">个</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

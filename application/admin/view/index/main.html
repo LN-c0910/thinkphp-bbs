@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>BBS论坛后台</title>
+  <link rel="stylesheet" href="/static/css/layui.css">
+    <link rel="stylesheet" href="/static/css/x-admin.css" media="all">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/lib/layui/layui.js" charset="utf-8"></script>
+    <script src="/static/js/x-layui.js" charset="utf-8"></script>
+</head>
+<body class="layui-layout-body">
+{block name="nav"}
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo">BBS论坛后台</div>
+    <!-- 头部区域（可配合layui已有的水平导航） -->
+    <ul class="layui-nav layui-layout-left">
+      <li class="layui-nav-item"><a href="/admin/main">控制台</a></li>
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item">
+        <a href="javascript:;">
+          <img src="{$picUrl}{:session('admin.userInfo')['uface']}" class="layui-nav-img">
+            {:session('admin.uname')}
+        </a>
+        <dl class="layui-nav-child">
+          <dd><a href="">基本资料</a></dd>
+          <dd><a href="">安全设置</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item"><a href="/admin/logout">退出</a></li>
+    </ul>
+  </div>
+  
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+      <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+        <li class="layui-nav-item">
+          <a class="" href="javascript:;">用户管理</a>
+          <dl class="layui-nav-child">
+            <dd><a href="user_manager?page=1">用户管理</a></dd>
+			<dd><a href="main/role_manager">角色管理</a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item">
+          <a href="javascript:;">主帖管理</a>
+          <dl class="layui-nav-child">
+            <dd><a href="/admin/main/topic_manager?page=1">主帖列表</a></dd>
+            <dd><a href="/admin/main/check_topic?page=1">审核主帖</a></dd>
+            <dd><a href="/admin/main/trash_topic?page=1">回收站</a></dd>
+          </dl>
+		</li>
+		  <li class="layui-nav-item">
+		    <a href="javascript:;">评论管理</a>
+		    <dl class="layui-nav-child">
+			<dd><a href="/admin/main/reply_manager?page=1">评论列表</a></dd>
+		  	<dd><a href="/admin/main/report_manager?page=1">举报记录</a></dd>
+		    </dl>
+		</li>
+		<li class="layui-nav-item">
+		  <a href="/admin/main/section_manager">板块管理</a>
+        </li>
+		<li class="layui-nav-item">
+		  <a href="javascript:;">发送通知</a>
+        </li>
+		<li class="layui-nav-item">
+		  <a href="/admin/main/xtxx">系统信息</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  {/block}
+  <div class="layui-body">
+    <!-- 内容主体区域 -->
+    <div style="padding: 15px;">
+        {block name="main_content"}
+        {include file="index/data_panel"}
+        {/block}
+	</div>
+  
+  <div class="layui-footer">
+     <pre style="color: gray;font-size: 50%">信管1701 网上论坛管理系统 课程设计</pre>
+  </div>
+</div>
+
+<script>
+//JavaScript代码区域
+layui.use('element', function(){
+  var element = layui.element;
+
+});
+layui.use(['layer','laydate','laypage','form'],function () {
+    var layer = layui.layer;
+    var laydate = layui.laydate;
+    var laypage = layui.laypage;
+    var form = layui.form();
+});
+
+</script>
+
+</div>
+</body>
+</html>

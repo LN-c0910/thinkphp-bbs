@@ -1,0 +1,101 @@
+---------------------------------------------------------------
+
+[2020-06-11T15:56:48+08:00] 127.0.0.1 GET www.bbs.cn/think
+[运行时间：0.193904s] [吞吐率：5.16req/s] [内存消耗：1,387.14kb] [文件加载：57]
+[ info ] [ LANG ] D:\phpstudy_pro\WWW\bbs\thinkphp\lang\zh-cn.php
+---------------------------------------------------------------
+
+[2020-06-11T15:57:22+08:00] 127.0.0.1 GET www.bbs.cn/think
+[运行时间：0.067377s] [吞吐率：14.84req/s] [内存消耗：1,387.13kb] [文件加载：57]
+[ info ] [ LANG ] D:\phpstudy_pro\WWW\bbs\thinkphp\lang\zh-cn.php
+---------------------------------------------------------------
+
+[2020-06-11T15:58:41+08:00] 127.0.0.1 GET www.bbs.cn/think
+[运行时间：0.080580s] [吞吐率：12.41req/s] [内存消耗：1,760.18kb] [文件加载：60]
+[ info ] [ LANG ] D:\phpstudy_pro\WWW\bbs\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'rule' => 'think',
+  'route' => 'index/Index/think',
+  'option' => 
+  array (
+    'merge_rule_regex' => false,
+  ),
+  'var' => 
+  array (
+  ),
+)
+[ info ] [ HEADER ] array (
+  'host' => 'www.bbs.cn',
+  'connection' => 'keep-alive',
+  'cache-control' => 'max-age=0',
+  'upgrade-insecure-requests' => '1',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'accept-language' => 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
+  'cookie' => 'pgv_pvi=7428900864; pgv_si=s3487247360; thinkphp_show_page_trace=1|0',
+)
+[ info ] [ PARAM ] array (
+)
+---------------------------------------------------------------
+
+[2020-06-11T16:00:31+08:00] 127.0.0.1 GET www.bbs.cn/think
+[运行时间：0.056565s] [吞吐率：17.68req/s] [内存消耗：1,285.67kb] [文件加载：52]
+[ info ] [ LANG ] D:\phpstudy_pro\WWW\bbs\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'rule' => 'think',
+  'route' => 
+  Closure::__set_state(array(
+  )),
+  'option' => 
+  array (
+    'merge_rule_regex' => false,
+  ),
+  'var' => 
+  array (
+  ),
+)
+[ info ] [ HEADER ] array (
+  'host' => 'www.bbs.cn',
+  'connection' => 'keep-alive',
+  'cache-control' => 'max-age=0',
+  'upgrade-insecure-requests' => '1',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'accept-language' => 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
+  'cookie' => 'pgv_pvi=7428900864; pgv_si=s3487247360; thinkphp_show_page_trace=1|0',
+)
+[ info ] [ PARAM ] array (
+)
+---------------------------------------------------------------
+
+[2020-06-11T16:01:41+08:00] 127.0.0.1 GET www.bbs.cn/think
+[运行时间：0.069591s] [吞吐率：14.37req/s] [内存消耗：1,285.74kb] [文件加载：52]
+[ info ] [ LANG ] D:\phpstudy_pro\WWW\bbs\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'rule' => 'think',
+  'route' => 
+  Closure::__set_state(array(
+  )),
+  'option' => 
+  array (
+    'merge_rule_regex' => false,
+  ),
+  'var' => 
+  array (
+  ),
+)
+[ info ] [ HEADER ] array (
+  'host' => 'www.bbs.cn',
+  'connection' => 'keep-alive',
+  'cache-control' => 'max-age=0',
+  'upgrade-insecure-requests' => '1',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'accept-language' => 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
+  'cookie' => 'pgv_pvi=7428900864; pgv_si=s3487247360; thinkphp_show_page_trace=1|0',
+)
+[ info ] [ PARAM ] array (
+)

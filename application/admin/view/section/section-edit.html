@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="utf-8">
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="format-detection" content="telephone=no">
+        <link rel="stylesheet" href="/static/css/x-admin.css" media="all">
+    </head>
+    
+    <body>
+        <div class="x-body">
+            <form class="layui-form" action="/admin/main/section_edit/{$section.sid}" enctype="multipart/form-data" method="post">
+                <div class="layui-form-item">
+                    <label for="simg" class="layui-form-label">
+                        <span class="x-red">*</span>板块头像
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="file" name="simg" id="simg">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label  class="layui-form-label">缩略图
+                    </label>
+                    <img id="LAY_demo_upload" width="100" height="100" src="{$section.simg}">
+                </div>
+                <div class="layui-form-item">
+                    <label  class="layui-form-label">
+                    </label>
+                </div>
+                <div class="layui-form-item">
+                    <label for="sname" class="layui-form-label">
+                        <span class="x-red">*</span>板块名称
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="sname" name="sname" required="" lay-verify="required"
+                              value="{$section.sname}" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        <span class="x-red">*</span>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="sstatement" class="layui-form-label">
+                        <span class="x-red">*</span>板块说明
+                    </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="sstatement" name="sstatement" required="" lay-verify="required"
+                        autocomplete="off" value="{$section.sstatement}" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <button  class="layui-btn" lay-filter="add" type="submit">
+                        修改
+                    </button>
+                </div>
+            </form>
+        </div>
+
+
+    </body>
+
+</html>

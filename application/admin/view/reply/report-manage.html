@@ -1,0 +1,334 @@
+{extend name="index/main" /}
+{block name="main_content"}
+<link rel="stylesheet" href="/static/css/layui.css">
+<style>
+    .layui-table td{
+        font-size: 80% !important;
+    }
+    table{
+        min-width: 100%;
+    }
+    td{
+        max-width: 50px;
+    }
+</style>
+<div class="x-body">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>评论举报管理
+        </legend>
+    </fieldset>
+    <form class="layui-form x-center" action="" style="width:800px">
+        <div class="layui-form-pane" style="margin-top: 15px;">
+            <div class="layui-form-item">
+                <div class="layui-input-inline">
+                    <input type="number" name="tid" placeholder="主帖ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline">
+                    <input type="number" name="rid" placeholder="跟帖ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form layui-input-inline">
+                    <select lay-filter="report_type" name="report_type">
+                        <option value="10000">全部类型</option>
+                        {foreach $type as $key=>$vo}
+                        <option value="{$vo.typeid}">{$vo.type}</option>
+                        {/foreach}
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width:80px">
+                    <button class="layui-btn" lay-submit="" lay-filter="search">搜索</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="feedBackAll()">批量处理</button>
+        <div class="layui-form layui-form-pane layui-inline">
+            <select  class="report_status" lay-filter="report_status" name="status">
+                <option {if($status==0)}selected{else /}{/if} value="0">未处理</option>
+                <option {if($status==1)}selected{else /}{/if} value="1">已处理</option>
+            </select>
+        </div>
+        <span class="x-right" style="line-height:40px">共有数据: {$count} 条</span></xblock>
+    <div class="table-container">
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <input type="checkbox" id="allCheck" name="" value="">
+            </th>
+            <th>
+                举报ID
+            </th>
+            <th>
+                主帖ID
+            </th>
+            <th>
+                帖子ID
+            </th>
+            <th>
+                回复者
+            </th>
+            <th>
+                回复内容
+            </th>
+            <th>
+                举报类型
+            </th>
+            <th>
+                举报原因
+            </th>
+            <th>
+               举报人
+            </th>
+            <th>
+               状态
+            </th>
+            <th>
+                举报时间
+            </th>
+            {if($status=='1')}
+            <th>
+                处理时间
+            </th>
+            {else /}
+            {/if}
+            <th>
+                处理结果
+            </th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $allReport as $key=>$val }
+        <tr>
+            <td>
+                <input class="this_report" type="checkbox" value="1" name="">
+            </td>
+            <td style="width: 10px">
+               {$val.reid}
+            </td>
+            <td  style="width: 10px;word-wrap:break-word;">
+                <u style="cursor: pointer" onclick="topic_show({$val.rtid})">{$val.rtid}</u>
+            </td>
+            <td style="width: 10px;word-wrap:break-word;">
+                {$val.rid}
+            </td>
+            <td style="width: 50px;word-wrap:break-word;">
+                {$val.replyer}
+            </td>
+            <td style="word-wrap:break-word;min-width: 100px;">
+                <u style="cursor:pointer" onclick="reply_show({$val.rid})">
+                    {$val.rcontents}
+                </u>
+            </td>
+            <td style="width: 60px;word-wrap:break-word;">
+                {$val.type}
+            </td>
+            <td style="width: 80px;word-wrap:break-word;">
+                {$val.reason}
+            </td>
+            <td style="width: 45px;word-wrap:break-word;">
+                {$val.reporter}
+            </td>
+            <td style="width: 50px;">
+                {if($val.status=='0')}
+                <span class="layui-badge">未处理</span>
+                {else /}
+                <span class="layui-badge layui-bg-green">已处理</span>
+                {/if}
+            </td>
+            <td>{$val.report_time}</td>
+            {if($status=='1')}
+            <td>
+                {$val.feedback_time}
+            </td>
+            {else /}
+            {/if}
+            <td class="td-manage" style="width: 90px;">
+                <div class="layui-form layui-form-pane">
+                    <select {if($val.status==1)}disabled{else /}{/if} data-reid="{$val.reid}" data-rid="{$val.rid}" data-reporter="{$val.reporter_id}" data-uid="{$val.ruid}"  lay-filter="feedback" name="feedback">
+                        {foreach $feedback as $key=>$vo}
+                        <option value="{$vo.fid}" {if($val.result_id==$vo.fid)}selected{else /}{/if}>{$vo.result}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    </div>
+    <div id="page"></div>
+</div>
+<script>
+    $(function () {
+        //全选按钮
+        $('#allCheck').click(function () {
+            $('.this_report').prop('checked',$(this).prop('checked'));
+        });
+        $('.this_report').click(function () {
+            if ($('.this_report:checked').length === $('.this_report').length) {
+                $('#allCheck').prop('checked',true);
+            }else {
+                $('#allCheck').prop('checked',false);
+            }
+        })
+    })
+</script>
+<script>
+    layui.use(['laypage','laydate','form'],function () {
+        var laypage = layui.laypage;
+        var form = layui.form();
+        //以上模块根据需要引入
+        laypage({
+            cont: 'page'
+            ,pages: {$pages}
+            ,curr: getQueryVariable('page')
+            ,jump: function(obj, first){
+                var curr = obj.curr;
+                if (!first) {
+                    location.href = updateQueryParameter(location.href,'page',curr);
+                }
+            }
+        });
+
+
+        //查询举报处理状态
+        form.on('select(report_status)', function(data){
+            let status = data.value;
+            if (!status){
+                layer.msg("请求错误,请重试");
+                return false;
+            }
+            location.href = updateQueryParameter(location.href,'status',status);
+        });
+        //查询举报处理状态
+        form.on('select(feedback)', function(data){
+            let feedback = data.value;
+            let rid = data.elem.getAttribute('data-rid');
+            let uid = data.elem.getAttribute('data-uid');
+            let reid = data.elem.getAttribute('data-reid');
+            let reporter = data.elem.getAttribute('data-reporter');
+            if (!feedback||!rid||!uid){
+                layer.msg("请求错误,请重试");
+                return false;
+            }
+            $.ajax({
+                url:'report/feedback/'+reid,
+                type:'POST',
+                data:{
+                    'feedback':feedback,
+                    'reporter':reporter,
+                    'rid':rid,
+                    'uid':uid
+                },
+                success:function () {
+                    $(data.elem).parents('tr').remove();
+                    layer.msg("处理成功");
+                },
+                error:function () {
+                    layer.msg("请求错误,请重试");
+                }
+            })
+            // location.href = updateQueryParameter(location.href,'status',status);
+        });
+        // 搜索提交
+        form.on('submit(search)', function(data){
+            console.log(data.field);//当前容器的全部表单字段，名值对形式：{name: value}
+            // return false; //阻止表单跳转。
+        });
+
+    });
+
+    //获取url查询参数
+    function getQueryVariable(variable)
+    {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+        }
+        return false;
+    }
+
+    //修改url查询参数值
+    function updateQueryParameter(url,key,val){
+        let re = new RegExp("([?&])"+key+"=.*?(&|$)","i");
+        let separator = url.indexOf('?') !== -1 ? "&" : "?";
+        if (url.match(re)) {
+            return url.replace(re,'$1' + key + "=" + val + '$2');
+        }else {
+            return url + separator + key + "=" + val;
+        }
+    }
+
+
+    //批量处理提交
+    //TODO
+    function feedBackAll() {
+        layer.confirm('确认要处理吗？', function (index) {
+            //捉到所有被选中的，发异步进行处理
+            $('.this_report:checked').parents('tr').remove();
+            layer.msg('处理成功', {icon: 1});
+        });
+    }
+
+    function topic_show(tid) {
+        window.open("{$api}#/index/topic/"+tid);
+        layer.msg('可以跳到前台具体主帖页面', {icon: 1, time: 1000});
+    }
+
+    function reply_show(rid) {
+        x_admin_show('查看内容', 'reply/view/'+rid, '600','600');
+    }
+
+
+    /*单个处理*/
+    function report_feedback(obj, id) {
+        layer.confirm('确认要删除吗?删除后可恢复', function (index) {
+            //发异步删除数据
+            $.ajax({
+                url:'reply/delete/'+id,
+                type: 'DELETE',
+                success:function (res) {
+                    layer.msg(res.msg, {icon: 1, time: 1000});
+                    $(obj).parent('td').html(`
+                <a title="恢复" class="layui-btn layui-btn-info layui-btn-xs ml-5" href="javascript:" onclick="reply_restore(this,${id})" style="text-decoration:none">
+                    恢复
+                </a>
+            `).prev('td').html(`<span class="layui-badge">已删除</span>`);
+                },
+                error:function (e) {
+                    layer.msg('删除失败,请刷新后重试', {icon: 2, time: 1000});
+                }
+            })
+
+
+        });
+    }
+    /*恢复*/
+    function reply_restore(obj, id) {
+        layer.confirm('确认要恢复该回复帖吗?', function (index) {
+            //发异步删除数据
+            $.ajax({
+                url:'reply/restore/'+id,
+                type: 'PUT',
+                success:function (res) {
+                    layer.msg(res.msg, {icon: 1, time: 1000});
+                    $(obj).parent('td').html(`
+                <a title="删除" class="layui-btn layui-btn-danger layui-btn-xs ml-5" href="javascript:" onclick="reply_del(this,${id})" style="text-decoration:none">
+                    删除
+                </a>
+            `).prev('td').html(`<span class="layui-badge layui-bg-green">已发布</span>`);
+                },
+                error:function (e) {
+                    layer.msg('操作失败,请刷新后重试', {icon: 2, time: 1000});
+                }
+            })
+
+
+        });
+    }
+</script>
+{/block}

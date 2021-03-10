@@ -1,0 +1,365 @@
+{extend name="index/main" /}
+{block name="main_content"}
+<link rel="stylesheet" href="/static/css/layui.css">
+<style>
+    .layui-table td{
+        font-size: 80% !important;
+    }
+    table{
+        min-width: 100%;
+    }
+    td{
+        max-width: 50px;
+    }
+</style>
+<div class="x-body">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>主帖管理
+        </legend>
+    </fieldset>
+    <form class="layui-form x-center" action="" style="width:800px">
+        <div class="layui-form-pane" style="margin-top: 15px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">日期范围</label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" placeholder="开始日" id="LAY_demorange_s">
+                </div>
+                <div class="layui-input-inline">
+                    <input class="layui-input" placeholder="截止日" id="LAY_demorange_e">
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" name="title" placeholder="标题" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width:80px">
+                    <button class="layui-btn" lay-submit="" lay-filter="search">搜索</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()">批量删除</button>
+        <button class="layui-btn" onclick="topic_add('添加主题','topic_add','800','600')">添加</button>
+        <span class="x-right" style="line-height:40px">共有数据：{$TopicNum} 条</span></xblock>
+    <div class="table-container">
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>
+                <input type="checkbox" id="allCheck" name="" value="">
+            </th>
+            <th>
+                ID
+            </th>
+            <th>
+                标题
+            </th>
+            <th>
+                板块
+            </th>
+            <th>
+                内容
+            </th>
+            <th>
+                回复
+            </th>
+            <th>
+                首页置顶
+            </th>
+            <th>
+                板块置顶
+            </th>
+            <th>
+                是否精华
+            </th>
+            <th>
+                创建时间
+            </th>
+            <th>
+                最后回复
+            </th>
+            <th>
+                点赞
+            </th>
+            <th>
+                题主
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $allTopic as $key=>$val }
+        <tr>
+            <td>
+                <input class="this_topic" type="checkbox" value="1" name="">
+            </td>
+            <td>
+                {$val.tid}
+            </td>
+            <td style="word-wrap:break-word;">
+                <u style="cursor:pointer" onclick="topic_show({$val.tid})">
+                    {$val.ttopic}
+                </u>
+            </td>
+            <td style="min-width: 90px">
+                <div class="layui-form layui-form-pane">
+                    <select data-tid="{$val.tid}" class="topic_section" lay-filter="topic_section" name="section">
+                        {foreach $sections as $key=>$vo}
+                        <option value="{$vo.sid}" {if($val.tsid==$vo.sid)}selected{else /}{/if}>{$vo.sname}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </td>
+            <td style="word-wrap:break-word;">
+                {$val.tcontents}
+            </td>
+            <td>
+                {$val.replys}
+            </td>
+            <td>
+                <div class="layui-form layui-form-pane">
+                    <input type="checkbox" lay-filter="forcetop" {if($val.forcetop==1)}checked{else /}{/if} data-tid="{$val.tid}"  value="{$val.forcetop}" name="forcetop" lay-skin="switch">
+                </div>
+            </td>
+            <td>
+                <div class="layui-form layui-form-pane">
+                    <input type="checkbox" lay-filter="top" class="cb" {if($val.top==1)}checked{else /}{/if} data-tid="{$val.tid}" value="{$val.top}"  name="top" lay-skin="switch">
+                </div>
+            </td>
+            <td>
+                <div class="layui-form layui-form-pane">
+                    <input type="checkbox" lay-filter="good" class="cb" {if($val.good==1)}checked{else /}{/if} data-tid="{$val.tid}" value="{$val.good}" name="good" lay-skin="switch">
+                </div>
+            </td>
+            <td style="min-width: 65px">{$val.ttime}</td>
+            <td style="min-width: 65px">{$val.tlastclick}</td>
+            <td>{$val.tlikecount}</td>
+            <td style="width: 30px">{$val.uname}</td>
+            <td class="td-manage" >
+<!--                <a title="编辑" href="javascript:" onclick="question_edit('编辑','question-edit.html','4','','510')"-->
+<!--                   class="layui-btn layui-btn-normal layui-btn-xs ml-5" style="text-decoration:none">-->
+<!--                    修改板块-->
+<!--                </a>-->
+                <a title="删除" class="layui-btn layui-btn-danger layui-btn-xs ml-5" href="javascript:"
+                   onclick="topic_del(this,{$val.tid})"
+                   style="text-decoration:none">
+                    删除
+                </a>
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    </div>
+    <div id="page"></div>
+</div>
+<script>
+    $(function () {
+        //全选按钮
+        $('#allCheck').click(function () {
+            $('.this_topic').prop('checked',$(this).prop('checked'));
+        });
+        $('.this_topic').click(function () {
+            if ($('.this_topic:checked').length === $('.this_topic').length) {
+                $('#allCheck').prop('checked',true);
+            }else {
+                $('#allCheck').prop('checked',false);
+            }
+        })
+    })
+</script>
+<script>
+    layui.use(['laypage','laydate','form'],function () {
+        var laypage = layui.laypage;
+        var form = layui.form();
+        //以上模块根据需要引入
+        laypage({
+            cont: 'page'
+            ,pages: {$pages}
+            ,curr: getQueryVariable('page')
+            ,jump: function(obj, first){
+                var curr = obj.curr;
+                if (!first) {
+                    location.href = updateQueryParameter(location.href,'page',curr);
+                }
+            }
+        });
+
+        var start = {
+            min: laydate.now()
+            , max: '2099-06-16 23:59:59'
+            , istoday: false
+            , choose: function (datas) {
+                end.min = datas; //开始日选好后，重置结束日的最小日期
+                end.start = datas //将结束日的初始值设定为开始日
+            }
+        };
+
+        var end = {
+            min: laydate.now()
+            , max: '2099-06-16 23:59:59'
+            , istoday: false
+            , choose: function (datas) {
+                start.max = datas; //结束日选好后，重置开始日的最大日期
+            }
+        };
+
+        document.getElementById('LAY_demorange_s').onclick = function () {
+            start.elem = this;
+            laydate(start);
+        };
+        document.getElementById('LAY_demorange_e').onclick = function () {
+            end.elem = this;
+            laydate(end);
+        }
+
+        //首页置顶
+        form.on('switch(forcetop)', function(data){
+            let tid = data.elem.getAttribute('data-tid'); //获取帖子id
+            let status = data.elem.checked; // 获取状态
+            if (!tid) {
+                layer.msg("请求错误,请重试");
+                return false;
+            }
+            updateTopicStatus(tid,status,'10405','10406');
+        });
+        //板块置顶
+        form.on('switch(top)', function(data){
+            let tid = data.elem.getAttribute('data-tid'); //获取帖子id
+            let status = data.elem.checked; // 获取状态
+            if (!tid) {
+                layer.msg("请求错误,请重试");
+                return false;
+            }
+            updateTopicStatus(tid,status,'10401','10402');
+        });
+        //帖子精华状态
+        form.on('switch(good)', function(data){
+            let tid = data.elem.getAttribute('data-tid'); //获取帖子id
+            let status = data.elem.checked; // 获取状态
+            if (!tid) {
+                layer.msg("请求错误,请重试");
+                return false;
+            }
+            updateTopicStatus(tid,status,'10403','10404');
+        });
+        //修改帖子板块
+        form.on('select(topic_section)', function(data){
+            let tid = data.elem.getAttribute('data-tid');
+            let tsid = data.value;
+            if (!tid || !tsid){
+                layer.msg("请求错误,请重试");
+                return false;
+            }
+            updateSectionByTopic(tid,tsid);
+        });
+
+
+    });
+
+
+    //更新帖子状态 （置顶 加精）
+    function updateTopicStatus(tid,status,status_on,status_off){
+        $.ajax({
+            url:'/admin/main/update_topic_status/'+tid,
+            type:'post',
+            data:{
+                'status_code': status?status_on:status_off
+            },
+            success:function () {
+                layer.msg("帖子状态已更新");
+                return true;
+            },
+            error:function () {
+                layer.msg("操作失败,请刷新后重试");
+                return false;
+            }
+        })
+    }
+
+    //获取url查询参数
+    function getQueryVariable(variable)
+    {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+        }
+        return(false);
+    }
+    //修改url查询参数值
+    function updateQueryParameter(url,key,val){
+        let re = new RegExp("([?&])"+key+"=.*?(&|$)","i");
+        let separator = url.indexOf('?') !== -1 ? "&" : "?";
+        if (url.match(re)) {
+            return url.replace(re,'$1' + key + "=" + val + '$2');
+        }else {
+            return url + separator + key + "=" + val;
+        }
+    }
+    //修改帖子板块
+    function updateSectionByTopic(tid, tsid) {
+        $.ajax({
+            url:'/admin/main/update_topic_section/'+tid+'/'+tsid,
+            success:function (res) {
+                if (res.msg==='更新成功'){
+                    layer.msg("修改成功");
+                    return true;
+                }else {
+                    layer.msg("操作失败,请刷新后重试");
+                    return false;
+                }
+            },
+            error:function () {
+                layer.msg("操作失败,请刷新后重试");
+                return false;
+            }
+        })
+    }
+    //批量删除提交
+    //TODO
+    function delAll() {
+        layer.confirm('确认要删除吗？', function (index) {
+            //捉到所有被选中的，发异步进行删除
+            layer.msg('删除成功', {icon: 1});
+        });
+    }
+
+    function topic_show(tid) {
+        window.open("{$api}#/index/topic/"+tid);
+        layer.msg('可以跳到前台具体主帖页面', {icon: 1, time: 1000});
+    }
+
+    /*添加*/
+    function topic_add(title, url, w, h) {
+        x_admin_show(title, url, w, h);
+    }
+
+    //编辑
+    // function question_edit(title, url, id, w, h) {
+    //     x_admin_show(title, url, w, h);
+    // }
+
+    /*删除*/
+    function topic_del(obj, id) {
+        layer.confirm('确认要删除吗?删除后可在回收站恢复', function (index) {
+            //发异步删除数据
+            $.ajax({
+                url:'/admin/topic/'+id,
+                type: 'DELETE',
+                success:function (res) {
+                    layer.msg(res.msg, {icon: 1, time: 1000});
+                    $(obj).parents("tr").remove();
+                },
+                error:function (e) {
+                    layer.msg('删除失败,请刷新后重试', {icon: 2, time: 1000});
+                }
+            })
+
+
+        });
+    }
+</script>
+{/block}

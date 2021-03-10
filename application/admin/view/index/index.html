@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>后台登录</title>
+		<style>
+			* {
+				font-family: 'montserrat', sans-serif;
+			}
+			body {
+				margin: 0;
+				padding: 0;
+				background: #333;
+			}
+			.login-box {
+				position: absolute;
+				top: 0;
+				width: 100%;
+				height: 100vh; 
+				background-image: linear-gradient(
+					45deg,
+					#9fbaa8,
+					#31354c
+				); 
+				transition: 0.4s; 
+			}
+			.login-form {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				color: white;
+				text-align: center;
+			}
+			.login-form h1 {
+				font-weight: 400;
+				margin-top: 0;
+			}
+			.txtb{
+				display: block;
+				box-sizing: border-box;
+				width: 240px;
+				background: #ffffff28;
+				border: 1px solid white;
+				padding: 10px 20px;
+				color: white;
+				outline: none;
+				margin: 10px 0;
+				border-radius: 6px;
+				text-align: center;
+			}
+			.login-btn {
+				width: 240px;
+				background: #2c3e50;
+				border: 0;
+				color: white;
+				padding: 10px;
+				border-radius: 6px;
+				cursor: pointer;
+			}
+			.captcha{
+				width: 240px;
+			}
+			#capimg{
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="login-box">
+			<form action="{:url('admin/index/login')}" method="post" class="login-form">
+				<h1>论坛后台登录</h1>
+				<p style="color:red;">
+					{if(session('?admin.error'))}
+					{:session('admin.error')}
+					{else /}
+					{/if}
+				</p>
+				<!--令牌信息 csrf验证-->
+				{:token()}
+				<input class="txtb"  type="text" id="user" required name="username" placeholder="用户名" />
+				<input class="txtb" type="password" id="psd" required name="password" placeholder="密码" />
+				<input class="txtb" type="text" id="v_code" required name="vcode" placeholder="验证码" />
+				<div>
+					<img class="captcha" title="点击切换图片" id="capimg" src="{:captcha_src()}" alt="captcha">
+				</div>
+				<input class="login-btn" type="submit" name="submit" id="admin_login" value="登入"  />
+			</form>
+		</div>
+
+		<script>
+			/**验证输入框是否非法字符  是非法字符 则返回true**/
+			function checks(newName){
+				let regEn = /[`!@#$%^&*()_+<>?:"{},.\/;'[\]]/im,
+						regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]]/im;
+				return (regEn.test(newName) || regCn.test(newName));
+			}
+			//前端验证
+			document.getElementById("admin_login").onclick = function(){
+
+				let usr = document.getElementById("user").value;
+				let psd = document.getElementById("psd").value;
+				let vcode = document.getElementById("v_code").value;
+				if (checks(usr) || checks(psd) || checks(vcode)){
+					alert('非法输入!请重试');
+					return false;
+				}
+			};
+
+			//点击更换验证码
+			document.getElementById("capimg").addEventListener('click',function () {
+				let src = this.src;
+				this.src = src+'?vt='+Math.random();
+			});
+		</script>
+	</body>
+</html>
